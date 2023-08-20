@@ -17,13 +17,12 @@ node {
 
     stage('Test') {
         checkout scm
-        docker.image(mvnImage).inside(mvnArgs) {
-            sh 'mvn test'
-        }
-        post {
-            always {
-                junit 'target/surefire-reports/*.xml'
+        try {
+            docker.image(mvnImage).inside(mvnArgs) {
+                sh 'mvn test'
             }
+        } finally {
+            junit 'target/surefire-reports/*.xml'
         }
     }
 }
