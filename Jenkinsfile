@@ -1,5 +1,6 @@
 node {
-    def dockerImage = 'maven:3.9.0'
+    def mvnImage = 'maven:3.9.0'
+    def mvnArgs = '-v /root/.m2:/root/.m2'
 
     properties([
         pipelineTriggers([
@@ -8,15 +9,21 @@ node {
     ])
 
     stage('Build') {
-        docker.image(dockerImage).inside('-v /root/.m2:/root/.m2') {
+        checkout scm
+        docker.image(mvnImage).inside(mvnArgs) {
             sh 'mvn -B -DskipTests clean package'
         }
     }
 
     stage('Test') {
-        docker.image(dockerImage).inside('-v /root/.m2:/root/.m2') {
+        checkout scm
+        docker.image(mvnImage).inside(mvnArgs) {
             sh 'mvn test'
-            junit 'target/surefire-reports/*.xml'
+        }
+        post {
+            always {
+                junit 'target/surefire-reports/*.xml'
+            }
         }
     }
 }
