@@ -25,4 +25,11 @@ node {
             junit 'target/surefire-reports/*.xml'
         }
     }
+
+    stage('Deploy') {
+        checkout scm
+        docker.image(mvnImage).inside(mvnArgs) {
+            sh './jenkins/scripts/deliver.sh'
+        }
+    }
 }
