@@ -32,6 +32,7 @@ node {
         checkout scm
         docker.image(mvnImage).inside(mvnArgs) {
             sh './jenkins/scripts/deliver.sh'
+            sleep(60)
         }
     }
 }
